@@ -41,4 +41,42 @@ JOIN order_items oi ON p.product_id = oi.product_id
 GROUP BY p.product_name, p.product_id , p.PRICE 
 ORDER BY Total_sales DESC;
 
+SELECT c.name , count(o.ORDER_ID) AS number_orders  
+FROM ORDERS o 
+JOIN CUSTOMERS c 
+ON c.cust_id = o.CUST_ID 
+GROUP BY c.name 
+ORDER BY number_orders DESC 
+FETCH FIRST 3 ROWS ONLY ;
 
+SELECT p. product_name, sum(oi.quantuty) AS num_sum
+FROM products p
+JOIN order_items oi
+ON p. product_id = oi. product_id
+GROUP BY p. 
+product_name
+ORDER BY num_sum desc 
+FETCH FIRST 1 ROWS ONLY;
+WITH INGREDIENT_USED AS (
+SELECT i.ingredient_id , i.INGREDIENT_NAME , COUNT(DISTINCT pid.product_id) AS num_used
+FROM INGREDIENTS i 
+JOIN PRODUCT_INGREDIENT_DETAILS pid 
+ON i.INGREDIENT_ID = pid.INGREDIENT_ID 
+GROUP BY i.ingredient_id , i.INGREDIENT_NAME 
+),
+INGREDIENT_RANKED AS (
+SELECT ingredient_id , ingredient_name , num_used ,
+RANK()over(ORDER BY num_used ) AS used_rnk
+FROM INGREDIENT_USED
+)
+SELECT *
+FROM INGREDIENT_RANKED
+WHERE used_rnk <= 3;
+
+SELECT p.product_id , p.product_name , COUNT(pid.ingredient_id) num_cunt
+FROM PRODUCTS p 
+JOIN PRODUCT_INGREDIENT_DETAILS pid 
+ON p.PRODUCT_ID = pid.PRODUCT_ID 
+GROUP BY p.product_id , p.product_name
+HAVING COUNT(pid.INGREDIENT_ID) > 3
+ORDER BY num_cunt DESC ; 
