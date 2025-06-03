@@ -203,3 +203,39 @@ END LOOP;
 END;
 
 SELECT * FROM ORDER_ITEMS oi ;
+
+CREATE OR REPLACE PROCEDURE add_feedback (
+p_feed_id NUMBER , p_cust_id NUMBER , p_order_id NUMBER , p_rating NUMBER ,   P_feed_comment varchar2
+)
+IS 
+v_feed_date DATE := sysdate ;
+BEGIN 
+	IF p_rating > 10 THEN 
+	raise_application_error(-20006 , 'CANNOT BE MORE THAN 10');
+END IF ;
+INSERT INTO feedback_customers (feedback_id , cust_id , order_id , rating ,   feedback_comment, feedback_date )
+VALUES (p_feed_id , p_cust_id , p_order_id , p_rating ,  P_feed_comment , v_feed_date );
+
+EXCEPTION 
+WHEN OTHERS THEN 
+dbms_output.put_line ('ERRORS : ' || sqlcode ||'  '|| sqlerrm);
+END;
+
+BEGIN
+	add_feedback (	p_feed_id => 1 , p_cust_id => 2 , p_order_id => 2 , p_rating => 8.6 , p_feed_comment => 'Very good service');
+	BEGIN
+  add_feedback(p_feed_id => 2, p_cust_id => 1, p_order_id => 1, p_rating => 9.2, p_feed_comment => 'Excellent pizza, fresh ingredients');
+  
+  add_feedback(p_feed_id => 3, p_cust_id => 3, p_order_id => 5, p_rating => 7.5, p_feed_comment => 'Tasty but arrived a bit late');
+
+  add_feedback(p_feed_id => 4, p_cust_id => 4, p_order_id => 7, p_rating => 5.8, p_feed_comment => 'Not hot, average quality');
+
+  add_feedback(p_feed_id => 5, p_cust_id => 2, p_order_id => 6, p_rating => 8.0, p_feed_comment => 'Fast delivery and kind staff');
+
+  add_feedback(p_feed_id => 6, p_cust_id => 1, p_order_id => 9, p_rating => 6.4, p_feed_comment => 'Okay taste, needs improvement in crust');
+END;
+
+	END; 
+
+
+

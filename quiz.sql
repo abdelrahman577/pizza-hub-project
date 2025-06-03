@@ -80,3 +80,71 @@ ON p.PRODUCT_ID = pid.PRODUCT_ID
 GROUP BY p.product_id , p.product_name
 HAVING COUNT(pid.INGREDIENT_ID) > 3
 ORDER BY num_cunt DESC ; 
+
+ SELECT p.product_name , count(oi.order_id)
+FROM products p 
+JOIN ORDER_ITEMS oi  
+ON p.PRODUCT_ID = oi.PRODUCT_ID 
+GROUP BY p.PRODUCT_NAME ;
+
+SELECT c.name , count(o.order_id) AS num_order
+FROM CUSTOMERS c 
+JOIN ORDERS o 
+ON c.CUST_ID = o.CUST_ID 
+GROUP BY c.name 
+ORDER BY num_order DESC ;
+
+SELECT 
+  i.ingredient_name, 
+  COUNT(DISTINCT pi.product_id) AS num_products
+FROM 
+  ingredients i
+JOIN 
+  product_ingredients pi ON i.ingredient_id = pi.ingredient_id
+GROUP BY 
+  i.ingredient_name
+HAVING 
+  COUNT(DISTINCT pi.product_id) > 3;
+  
+ SELECT p.product_name ,   i.ingredient_name  , pi.ingredient_id
+ FROM PRODUCTS p 
+ JOIN PRODUCT_INGREDIENTS pi
+ ON p.PRODUCT_ID = pi.PRODUCT_ID 
+ JOIN INGREDIENTS i 
+ ON i.INGREDIENT_ID = pi.INGREDIENT_ID 
+ WHERE i.INGREDIENT_NAME = 'TOMATO' ;
+ 
+SELECT p.product_name , COUNT(pid.ingredient_id)
+FROM PRODUCTS p 
+JOIN PRODUCT_INGREDIENT_DETAILS pid
+ON p.PRODUCT_ID = pid.PRODUCT_ID 
+GROUP BY p.PRODUCT_NAME;
+
+SELECT c.name , count(fc.feedback_id) AS num_feedback
+FROM CUSTOMERS c 
+JOIN FEEDBACK_CUSTOMERS fc 
+ON c.CUST_ID = fc.CUST_ID 
+GROUP BY c.NAME 
+HAVING count(fc.FEEDBACK_ID) > 1 ;
+
+SELECT p.product_name ,  oi.order_id 
+FROM PRODUCTS p 
+LEFT JOIN ORDER_ITEMS oi 
+ON p.PRODUCT_ID = oi.PRODUCT_ID 
+WHERE oi.ORDER_ID IS NULL ;
+
+SELECT p.product_name, COUNT(pid.ingredient_id) AS num_ingredients
+FROM PRODUCTS p 
+JOIN PRODUCT_INGREDIENT_DETAILS pid
+ON p.PRODUCT_ID = pid.PRODUCT_ID 
+GROUP BY p.PRODUCT_NAME
+ORDER BY num_ingredients ASC
+FETCH FIRST 1 ROW ONLY;
+
+SELECT i.ingredient_name , i.ingredient_id , 
+RANK()over(ORDER BY count(pid.product_id) desc) AS rnk
+FROM INGREDIENTS i 
+JOIN PRODUCT_INGREDIENT_DETAILS pid 
+ON i.INGREDIENT_ID =  pid.INGREDIENT_ID 
+GROUP BY   i.ingredient_name , i.ingredient_id 
+ORDER BY rnk;
